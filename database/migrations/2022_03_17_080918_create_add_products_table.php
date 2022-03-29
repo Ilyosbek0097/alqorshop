@@ -15,7 +15,6 @@ class CreateAddProductsTable extends Migration
     {
         Schema::create('add_products', function (Blueprint $table) {
             $table->id('add_product_id');
-            $table->bigInteger('branch_id');
             $table->date('date');
             $table->string('supplier');
             $table->bigInteger('all_product_id');

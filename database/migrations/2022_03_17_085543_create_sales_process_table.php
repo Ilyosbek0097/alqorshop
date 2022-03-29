@@ -17,7 +17,6 @@ class CreateSalesProcessTable extends Migration
             $table->id('sales_id');
             $table->bigInteger('customer_id');
             $table->integer('sales_code');
-            $table->bigInteger('branch_id');
             $table->date('sales_date');
             $table->bigInteger('alqor_product_id');
             $table->double('sales_price_final');
