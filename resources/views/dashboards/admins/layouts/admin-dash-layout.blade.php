@@ -217,11 +217,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-
+         // BS-Stepper Init
+         document.addEventListener('DOMContentLoaded', function() {
+            window.stepper = new Stepper(document.querySelector('.bs-stepper'));
+        });
         $(function() {
 
-           $('[data-widget="pushmenu"]').toggle(function(){
-            $('body').addClass('')
+           $('[data-widget="pushmenu"]').click(function(){
+            var class_name = $('body').attr('class');
+            if(class_name.indexOf('sidebar-collapse') == -1)
+            {
+                $('body').addClass('sidebar-collapse');
+            }
+            else
+            {
+                $('body').removeClass('sidebar-collapse');
+            }
+            // console.log(class_name);
            });
 
             /* UPDATE ADMIN PERSONAL INFO */
@@ -268,7 +280,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 allowedExtensions: ['jpg', 'jpeg', 'png'],
                 buttonsText: ['CROP', 'QUIT'],
                 buttonsColor: ['#30bf7d', '#ee5155', -15],
-                processUrl: '{{ route('adminPictureUpdate') }}',
+                processUrl: "{{ route('adminPictureUpdate') }}",
                 // withCSRF:['_token','{{ csrf_token() }}'],
                 onSuccess: function(message, element, status) {
                     alert(message);
@@ -305,10 +317,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 });
             });
 
-         // BS-Stepper Init
-        document.addEventListener('DOMContentLoaded', function() {
-            window.stepper = new Stepper(document.querySelector('.bs-stepper'))
-        })
+        
 
 
         });
