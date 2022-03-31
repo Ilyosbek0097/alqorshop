@@ -19,17 +19,24 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{{ URL::to('plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ URL::to('plugins/ijaboCropTool/ijaboCropTool.min.css') }}">
     <link rel="stylesheet" href="{{ URL::to('plugins/fontawesome-free/css/all.min.css') }}">
+    {{-- Data Table CSS --}}
     <link rel="stylesheet" href="{{ URL::to('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ URL::to('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ URL::to('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+   {{-- Steper CSS --}}
     <link rel="stylesheet" href="{{ URL::to('plugins/bs-stepper/css/bs-stepper.min.css') }}">
+    {{-- Select 2 CSS --}}
+    <link rel="stylesheet" href="{{ URL::to('plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::to('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    {{-- Sweet Alert CSS --}}
+    <link rel="stylesheet" href="{{ URL::to('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
 
     <link rel="stylesheet" href="{{ URL::to('dist/css/adminlte.min.css?v=3.2.0') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ URL::to('dist/css/adminlte.min.css') }}">
 </head>
 
-<body class="sidebar-mini layout-fixed text-sm">
+<body class="sidebar-mini layout-fixed text-md">
     <div class="wrapper">
         <div class="preloader flex-column justify-content-center align-items-center">
             <img class="animation__shake" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
@@ -199,7 +206,24 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{{ URL::to('plugins/ijaboCropTool/ijaboCropTool.min.js') }}"></script>
     <!-- BS-Stepper -->
     <script src="{{ URL::to('plugins/bs-stepper/js/bs-stepper.min.js') }}"></script>
+    {{-- Sweet Alert Js --}}
+    <script src="{{ URL::to('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     {{-- Data Table --}}
+    <!-- DataTables  & Plugins -->
+    <script src="{{ URL::to('plugins/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/dataTables.buttons.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.bootstrap4.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/jszip/jszip.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/pdfmake/pdfmake.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/pdfmake/vfs_fonts.js')}}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.html5.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.print.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
+    {{-- Select 2 JS --}}
+    <script src="{{ URL::to('plugins/select2/js/select2.full.min.js') }}"></script>
     @yield('script')
     <!-- AdminLTE App -->
     <script src="{{ URL::to('dist/js/adminlte.min.js') }}"></script>
@@ -217,13 +241,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-
+        // BS-Stepper Init
+        document.addEventListener('DOMContentLoaded', function() {
+            window.stepper = new Stepper(document.querySelector('.bs-stepper'));
+        });
         $(function() {
 
-           $('[data-widget="pushmenu"]').toggle(function(){
-            $('body').addClass('')
-           });
-
+           $('[data-widget="pushmenu"]').click(function(){
+            var class_name = $('body').attr('class');
+            if(class_name.indexOf('sidebar-collapse') == -1)
+            {
+                $('body').addClass('sidebar-collapse');
+            }
+            else
+            {
+                $('body').removeClass('sidebar-collapse');
+            }
+        });
             /* UPDATE ADMIN PERSONAL INFO */
 
             $('#AdminInfoForm').on('submit', function(e) {
@@ -268,7 +302,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 allowedExtensions: ['jpg', 'jpeg', 'png'],
                 buttonsText: ['CROP', 'QUIT'],
                 buttonsColor: ['#30bf7d', '#ee5155', -15],
-                processUrl: '{{ route('adminPictureUpdate') }}',
+                processUrl: "{{ route('adminPictureUpdate') }}",
                 // withCSRF:['_token','{{ csrf_token() }}'],
                 onSuccess: function(message, element, status) {
                     alert(message);
@@ -305,14 +339,29 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 });
             });
 
-         // BS-Stepper Init
-        document.addEventListener('DOMContentLoaded', function() {
-            window.stepper = new Stepper(document.querySelector('.bs-stepper'))
-        })
+
 
 
         });
+
     </script>
+    <script>
+        $(function () {
+            // Select 2 Script
+            $('.select2').select2()
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+            theme: 'bootstrap4'
+            });
+
+          $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy",  "excel", "pdf", "print"]
+          }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+        });
+    </script>
+
 </body>
 
 </html>

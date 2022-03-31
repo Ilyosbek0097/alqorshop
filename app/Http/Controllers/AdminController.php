@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Branche;
-use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
+use App\Models\Branche;
+use App\Models\AllProduct;
+use App\Models\ProductType;
+use App\Models\ProductBrand;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -118,7 +122,8 @@ class AdminController extends Controller
        }
        public function add_product()
        {
-           return view('dashboards.admins.add_product');
+           $product_types = ProductType::all();
+           return view('dashboards.admins.add_product', compact('product_types'));
        }
        public function all_product()
        {
@@ -132,40 +137,132 @@ class AdminController extends Controller
        {
            return view('dashboards.admins.orders');
        }
-
-
-
-
-
-
-
     //    Forma actionlari
-    public function add_branch_form(Request $request)
-    {
-        $request->validate([
-            'branch_name' => 'required|min:2|max:15',
-            'branch_address' => 'required|min:2|max:100',
-            'branch_phone' => 'required|min:5|max:15',
-            'table_name' => 'required|min:5|max:50',
-        ]);
-        // Branche::insert($request->input());
-        $branch_selects = Branche::all();
-        foreach ($branch_selects as $branch_select) {
-            if($branch_select->branch_name == $request->branch_name)
-            {
-                return redirect()->route('admin.branches');
+        public function add_branch_form(Request $request)
+        {
+            $request->validate([
+                'branch_name' => 'required|min:2|max:15',
+                'branch_address' => 'required|min:2|max:100',
+                'branch_phone' => 'required|min:5|max:15',
+                'table_name' => 'required|min:5|max:50',
+            ]);
+            // Branche::insert($request->input());
+            $branch_selects = Branche::all();
+            foreach ($branch_selects as $branch_select) {
+                if($branch_select->branch_name == $request->branch_name)
+                {
+                    return redirect()->route('admin.branches');
+                }
             }
+
+
+            $branch = new Branche();
+            $branch->branch_name = $request->branch_name;
+            $branch->address = $request->branch_address;
+            $branch->phone = $request->branch_phone;
+            $branch->table_name = $request->table_name;
+            $branch->save();
+            return redirect()->route('admin.branches');
+
         }
 
+        public function add_type_brend_ajax(Request $request)
+        {
+            $product_type = $request->product_type;
+            $new_type = $request->new_type;
+            $product_brend = $request->product_brend;
+            $product_code = $request->old_code;
 
-        $branch = new Branche();
-        $branch->branch_name = $request->branch_name;
-        $branch->address = $request->branch_address;
-        $branch->phone = $request->branch_phone;
-        $branch->table_name = $request->table_name;
-        $branch->save();
-        return redirect()->route('admin.branches');
+            if(!$product_type && $new_type)
+            {
+                DB::beginTransaction();
+                try{
+                    // Insert Type
+                    $type = new ProductType;
+                    // $type_find = ProductType::where('type_name','=',$new_type);
+                    // $type->type_name = $product_type;
+                    $type->type_name = $new_type;
+                    $type->save();
 
-    }
+                    // Insert Brend
+                    $brend = new ProductBrand;
+                    $brend->brand_name = $product_brend;
+                    $brend->product_type_id = $type->id;
+                    $brend->save();
 
+                    // Insert AllProduct
+                    $all_product = new AllProduct;
+                    $all_product->product_code = $product_code;
+                    $all_product_select = AllProduct::latest('barcode')->first();
+                    if($all_product_select)
+                    {
+                        $all_product->barcode = $all_product_select->barcode+1;
+                    }
+                    else
+                    {
+                        $all_product->barcode = 100000;
+                    }
+                    $all_product->product_name = $new_type.' '.$product_brend;
+                    $all_product->save();
+
+
+                    DB::commit();
+                    return response()->json([
+                        'type_id' => $type->id,
+                        'type_name' => $new_type
+                    ]);
+                }
+                catch(\Exception $e){
+                    DB::rollback();
+                    return $e;
+                }
+
+
+            }
+            else if($product_type && !$new_type)
+            {
+                // return $request;
+                DB::beginTransaction();
+                try{
+                    // Insert Type
+                    // $type = new ProductType;
+                    // $type_find = ProductType::where('type_name','=',$new_type);
+                    // $type->type_name = $product_type;
+                    // $type->type_name = $new_type;
+                    // $type->save();
+
+                    // Insert Brend
+                    $brend = new ProductBrand;
+                    $brend->brand_name = $product_brend;
+                    $brend->product_type_id = $product_type;
+                    $brend->save();
+
+                    // Insert AllProduct
+                    $all_product = new AllProduct;
+                    $all_product->product_code = $product_code;
+                    $all_product_select = AllProduct::latest('barcode')->first();
+                    if($all_product_select)
+                    {
+                        $all_product->barcode = $all_product_select->barcode+1;
+                    }
+                    else
+                    {
+                        $all_product->barcode = 100000;
+                    }
+                    $type_name = ProductType::where('type_id',$product_type)->get('type_name');
+                    $all_product->product_name = $type_name[0]->type_name.' '.$product_brend;
+                    $all_product->save();
+
+
+                    DB::commit();
+                    return 1;
+                }
+                catch(\Exception $e){
+                    DB::rollback();
+                    return $e;
+                }
+            }
+
+
+        }
 }

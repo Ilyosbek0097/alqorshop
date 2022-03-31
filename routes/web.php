@@ -45,6 +45,10 @@ Route::group(['prefix'=>'admin', 'middleware'=>['isAdmin','auth','PreventBackHis
 
         // Forma Routelari
         Route::post('add_branch_form',[AdminController::class,'add_branch_form'])->name('admin.add_branch_form');
+
+        // Ajax Route
+        // ***** Type Brend Ajax ****//
+        Route::post('add_type_brend_ajax',[AdminController::class,'add_type_brend_ajax'])->name('admin.add_type_brend_ajax');
 });
 
 Route::group(['prefix'=>'user', 'middleware'=>['isUser','auth','PreventBackHistory']], function(){

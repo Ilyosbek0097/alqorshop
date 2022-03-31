@@ -18,7 +18,6 @@ class CreateAllProductsTable extends Migration
             $table->string('product_code');
             $table->integer('barcode');
             $table->string('product_name');
-            $table->bigInteger('extra_price_id');
             $table->timestamps();
         });
     }
