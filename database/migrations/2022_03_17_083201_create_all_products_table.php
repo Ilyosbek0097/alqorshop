@@ -18,6 +18,7 @@ class CreateAllProductsTable extends Migration
             $table->string('product_code');
             $table->integer('barcode');
             $table->string('product_name');
+            $table->string('product_image')->nullable();
             $table->timestamps();
         });
     }

@@ -23,7 +23,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{{ URL::to('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ URL::to('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ URL::to('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
-   {{-- Steper CSS --}}
+    {{-- Steper CSS --}}
     <link rel="stylesheet" href="{{ URL::to('plugins/bs-stepper/css/bs-stepper.min.css') }}">
     {{-- Select 2 CSS --}}
     <link rel="stylesheet" href="{{ URL::to('plugins/select2/css/select2.min.css') }}">
@@ -39,7 +39,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <body class="sidebar-mini layout-fixed text-md">
     <div class="wrapper">
         <div class="preloader flex-column justify-content-center align-items-center">
-            <img class="animation__shake" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+            <img class="animation__shake" src="{{ URL::to('dist/img/AdminLTELogo.png') }}" alt="AdminLTELogo"
+                height="60" width="60">
         </div>
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -132,12 +133,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="{{ route('admin.branches') }}"
                                 class="nav-link {{ request()->is('admin/branches*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-anchor"></i>
                                 <p>
                                     Filial Qo'shish
+                                </p>
+                            </a>
+                        </li> --}}
+                        <li class="nav-item">
+                            <a href="{{ route('admin.customers') }}"
+                                class="nav-link {{ request()->is('admin/customers*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>
+                                    Mijoz Qo'shish
                                 </p>
                             </a>
                         </li>
@@ -153,13 +163,55 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <li class="nav-item">
                             <a href="{{ route('admin.orders') }}"
                                 class="nav-link {{ request()->is('admin/orders*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-cart-plus"></i>
+                                <i class="nav-icon fas fa-reply"></i>
                                 <p>
-                                    Buyurtmalar <span class="ml-2 badge badge-success">14</span>
+                                    Tovar Qaytarish
 
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.order_product') }}"
+                                class="nav-link {{ request()->is('admin/order_product*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-cart-plus"></i>
+                                <p>
+                                    Buyurtma Berish
+
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.order_view') }}"
+                                class="nav-link {{ request()->is('admin/order_view*') ? 'active' : '' }}">
+                                <i class="nav-icon fa fa-th-large"></i>
+                                <p>
+                                    Buyurtmalar
+                                    @if (count($order_count) != 0)
+                                        <span class="ml-2 badge badge-success">{{ count($order_count) }}</span>
+                                    @endif
+
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.debit_cash') }}"
+                                class="nav-link {{ request()->is('admin/debit_cash*') ? 'active' : '' }}">
+                                <i class="nav-icon fa fa-briefcase"></i>
+                                <p>
+                                   Kassa
+                                </p>
+                            </a>
+                        </li>
+                        {{-- <li class="nav-item">
+                            <a href="{{ route('admin.expense_cash') }}"
+                                class="nav-link {{ request()->is('admin/expense_cash*') ? 'active' : '' }}">
+                                <i class="nav-icon fa fa-minus-square"></i>
+                                <p>
+                                   Chiqim Kassa
+                                </p>
+                            </a>
+                        </li> --}}
+
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -190,16 +242,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 Anything you want
             </div>
             <!-- Default to the left -->
-            <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights
-            reserved.
+            <strong>by SIMN &copy; 2022-2025
+
         </footer>
     </div>
     <!-- ./wrapper -->
-
+    {{-- {{ Session::order_count }} --}}
     <!-- REQUIRED SCRIPTS -->
 
     <!-- jQuery -->
     <script src="{{ URL::to('plugins/jquery/jquery.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/jquery/jquery.number.min.js') }}"></script>
+    <!-- InputMask -->
+    <script src="{{ URL::to('plugins/moment/moment.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
     <!-- Bootstrap 4 -->
     <script src="{{ URL::to('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ URL::to('dist/js/adminlte.js?v=3.2.0') }}"></script>
@@ -210,20 +266,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{{ URL::to('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     {{-- Data Table --}}
     <!-- DataTables  & Plugins -->
-    <script src="{{ URL::to('plugins/datatables/jquery.dataTables.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/datatables-buttons/js/dataTables.buttons.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.bootstrap4.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/jszip/jszip.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/pdfmake/pdfmake.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/pdfmake/vfs_fonts.js')}}"></script>
-    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.html5.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.print.min.js')}}"></script>
-    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
+    <script src="{{ URL::to('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/jszip/jszip.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/pdfmake/vfs_fonts.js') }}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ URL::to('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
     {{-- Select 2 JS --}}
     <script src="{{ URL::to('plugins/select2/js/select2.full.min.js') }}"></script>
+
     @yield('script')
     <!-- AdminLTE App -->
     <script src="{{ URL::to('dist/js/adminlte.min.js') }}"></script>
@@ -234,30 +291,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     {{-- CUSTOM JS CODES --}}
     <script>
-
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
         // BS-Stepper Init
-        document.addEventListener('DOMContentLoaded', function() {
-            window.stepper = new Stepper(document.querySelector('.bs-stepper'));
-        });
+
         $(function() {
 
-           $('[data-widget="pushmenu"]').click(function(){
-            var class_name = $('body').attr('class');
-            if(class_name.indexOf('sidebar-collapse') == -1)
-            {
-                $('body').addClass('sidebar-collapse');
-            }
-            else
-            {
-                $('body').removeClass('sidebar-collapse');
-            }
-        });
+            $('[data-mask]').inputmask();
+
+            $('[data-widget="pushmenu"]').click(function() {
+                var class_name = $('body').attr('class');
+                if (class_name.indexOf('sidebar-collapse') == -1) {
+                    $('body').addClass('sidebar-collapse');
+                } else {
+                    $('body').removeClass('sidebar-collapse');
+                }
+            });
             /* UPDATE ADMIN PERSONAL INFO */
 
             $('#AdminInfoForm').on('submit', function(e) {
@@ -343,22 +395,26 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
         });
-
     </script>
     <script>
-        $(function () {
+        $(function() {
             // Select 2 Script
             $('.select2').select2()
             //Initialize Select2 Elements
             $('.select2bs4').select2({
-            theme: 'bootstrap4'
+                theme: 'bootstrap4'
             });
 
-          $("#example1").DataTable({
-            "responsive": true, "lengthChange": false, "autoWidth": false,
-            "buttons": ["copy",  "excel", "pdf", "print"]
-          }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-
+            $("#example1").DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "buttons": ["copy", "excel", "pdf", "print"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            //   $("#tekshiruv_table").DataTable({
+            //     "responsive": true, "lengthChange": false, "autoWidth": false,
+            //     "buttons": ["copy",  "excel", "pdf", "print"]
+            //   }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         });
     </script>
 
