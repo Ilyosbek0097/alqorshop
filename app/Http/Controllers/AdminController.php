@@ -574,7 +574,7 @@ class AdminController extends Controller
 
 
             // $orders = Orders::all();
-            $orders = Orders::select("orders.serial_number","orders.order_status","customers.customer_name","customers.customer_address","customers.customer_code","users.name", DB::raw("COUNT(orders.order_id) as count, SUM(orders.selling_price) as total_price"))
+            $orders = Orders::select("orders.serial_number","orders.order_status","customers.customer_name","customers.customer_address","customers.customer_code","users.name", DB::raw("COUNT(orders.order_id) as count, SUM(orders.selling_price*orders.ammount) as total_price"))
             ->leftJoin('customers','orders.customer_id','=','customers.customer_id')
             ->leftJoin('users','orders.user_id','=','users.id')
             ->groupBy('orders.serial_number','orders.order_status','customers.customer_name',"customers.customer_address","customers.customer_code","users.name")
@@ -586,9 +586,10 @@ class AdminController extends Controller
         {
             $serial_number = $request->serial_number_input;
             $serial_order = Orders::leftJoin('customers','orders.customer_id','=','customers.customer_id')
-            ->leftJoin('users','orders.user_id','=','users.id')
-            ->leftJoin('all_products','orders.all_product_id','=','all_products.all_product_id')
-            ->where('serial_number','=',$serial_number)->get();
+                ->leftJoin('users','orders.user_id','=','users.id')
+                ->leftJoin('all_products','orders.all_product_id','=','all_products.all_product_id')
+                ->leftJoin('alqor_products','orders.all_product_id','=','alqor_products.product_id')
+                ->where('serial_number','=',$serial_number)->get();
             return view('dashboards.admins.order_crud', compact('serial_order'));
             // return redirect()->route('admin.order_view',['serial_order'=> $serial_order]);
         }
@@ -597,9 +598,10 @@ class AdminController extends Controller
         public function edit_order($id)
         {
             $one_order_data = Orders::leftJoin('customers','orders.customer_id','=','customers.customer_id')
-            ->leftJoin('users','orders.user_id','=','users.id')
-            ->leftJoin('all_products','orders.all_product_id','=','all_products.all_product_id')
-            ->where('order_id','=',$id)->first();
+                ->leftJoin('users','orders.user_id','=','users.id')
+                ->leftJoin('all_products','orders.all_product_id','=','all_products.all_product_id')
+                ->leftJoin('alqor_products', 'orders.all_product_id', '=', 'alqor_products.product_id')
+                ->where('order_id','=',$id)->first();
             return view('dashboards.admins.edit_order_view', compact('one_order_data'));
 
         }
@@ -676,7 +678,7 @@ class AdminController extends Controller
                                     'order_status' => 1
                                 ]);
 
-                $order_sum = SalesProcess::select(DB::raw("SUM(sales_price_final) as total_sum"))
+                $order_sum = SalesProcess::select(DB::raw("SUM(sales_price_final * sales_amount) as total_sum"))
                 ->where('order_number', '=', $request->serial_number)
                 ->first();
                 if($order_sum)
@@ -714,24 +716,35 @@ class AdminController extends Controller
         public function debit_cash()
         {
             // $arrdebit = [];
-            $income = IncomeExpenses::select(DB::raw("SUM(income_expenses.summa) as kirim,income_expenses.customer_id, customers.customer_name, customers.customer_address, customers.phone_number"))
-                                    ->leftJoin('customers','income_expenses.customer_id','=', 'customers.customer_id')
-                                    ->where('income_expenses.customer_id','!=','0')
-                                    ->where('income_expenses.status','=', '0')
-                                    ->where('income_expenses.tip','=', '0')
-                                    ->groupBy('customers.customer_name', 'customers.customer_address', 'customers.phone_number', 'income_expenses.customer_id')
-                                    ->get();
-            $expense  = IncomeExpenses::select(DB::raw("SUM(income_expenses.summa) as chiqim, income_expenses.date, income_expenses.customer_id, customers.customer_name, customers.customer_address, customers.phone_number"))
+//            $income = IncomeExpenses::select(DB::raw("SUM(income_expenses.summa) as chiqim,income_expenses.customer_id, customers.customer_name, customers.customer_address, customers.phone_number"))
+//                                    ->leftJoin('customers','income_expenses.customer_id','=', 'customers.customer_id')
+//                                    ->where('income_expenses.customer_id','!=','0')
+//                                    ->where('income_expenses.status','=', '0')
+//                                    ->where('income_expenses.tip','=', '0')
+//                                    ->where('income_expenses.delete_status','=', '0')
+//                                    ->groupBy('customers.customer_name', 'customers.customer_address', 'customers.phone_number', 'income_expenses.customer_id')
+//                                    ->get();
+            $expense  = IncomeExpenses::select(DB::raw("SUM(income_expenses.summa) as kirim, income_expenses.date, income_expenses.customer_id, customers.customer_name, customers.customer_address, customers.phone_number"))
                                         ->leftJoin('customers','income_expenses.customer_id','=', 'customers.customer_id')
                                         ->where('income_expenses.customer_id','!=','0')
                                         ->where('income_expenses.status','=', '1')
                                         ->where('income_expenses.tip','=', '0')
+                                        ->where('income_expenses.delete_status','=', '0')
                                         ->groupBy('customers.customer_name', 'income_expenses.date', 'customers.customer_address', 'customers.phone_number', 'income_expenses.customer_id')
                                         ->get();
 
+
                 // array_push($arrDebit,$expense);
+
+            $income = IncomeExpenses::select(DB::raw("SUM(income_expenses.summa) as chiqim,income_expenses.customer_id"))
+                                    ->where('income_expenses.customer_id','!=','0')
+                                    ->where('income_expenses.status','=', '0')
+                                    ->where('income_expenses.tip','=', '0')
+                                    ->where('income_expenses.delete_status','=', '0')
+                                    ->groupBy('income_expenses.customer_id')
+                                    ->get()->toArray();
             $customers = Customers::all();
-            $income_expenses = IncomeExpenses::leftJoin('customers','income_expenses.customer_id','=','customers.customer_id')->get();
+            $income_expenses = IncomeExpenses::leftJoin('customers','income_expenses.customer_id','=','customers.customer_id')->where('income_expenses.delete_status','=', '0')->get();
             return view('dashboards.admins.debit_cash', compact('customers','income_expenses','income','expense'));
         }
         public function expense_cash()
@@ -749,7 +762,7 @@ class AdminController extends Controller
                 'status' => 1,
                 'customer_id'=> $request->customer_id
             ])->first();
-            $debt = $expense->total_expense-$income->total_income;
+            $debt = number_format($expense->total_expense-$income->total_income, 0,'.', ' ');
             return $debt;
         }
         public function debit_customer_form(Request $request)
@@ -805,9 +818,11 @@ class AdminController extends Controller
             ->leftJoin('users','orders.user_id','=','users.id')
             ->leftJoin('all_products','orders.all_product_id','=','all_products.all_product_id')
             ->where('serial_number','=',$id)->get();
+            $total_sum = Orders::select(\DB::raw('SUM(ammount) as total_amount, SUM(ammount*selling_price) as total_sum'))
+                ->where('serial_number','=',$id)->first();
             $a=1;
 
-            return view('dashboards.admins.order_print', compact('order_products','a'));
+            return view('dashboards.admins.order_print', compact('order_products','a', 'total_sum'));
         }
 
 

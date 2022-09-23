@@ -188,7 +188,7 @@
 
                                 // }
                                 // console.log(response.one_product.product_name);
-                                if (parseInt(amount) == 0) {
+                                if (parseFloat(amount) == 0) {
                                     Swal.fire({
                                         icon: 'error',
                                         title: "Bu Maxsulot Bazada Qolmagan!",
@@ -203,7 +203,7 @@
                                         '<td>' +
                                         '<small style="font-size: 12px; color:green">Nomi:</small><br>' +
                                         '<i id="name_text">' + name + '</i><br>' +
-                                        '<small style="font-size: 12px; color:green">Qoldig`i:</small><br>' +
+                                        '<small style="font-size: 14px; color:green">Qoldig`i:</small><br>' +
                                     '<i id="amount_text_'+product_id+'">' + amount + '</i><br>' +
                                     '<small style="font-size: 12px; color:green">Summasi:</small><br>' +
                                     '<i id="price_text_'+product_id+'">' + selling_price + '</i><br>' +

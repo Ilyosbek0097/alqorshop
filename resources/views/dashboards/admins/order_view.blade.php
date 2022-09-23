@@ -74,7 +74,9 @@
                                                             </form>
                                                         </td>
                                                         <td>
-                                                            <a class="btn btn-warning" href="{{ route('admin.order_print',$order->serial_number) }}"><i class="fa fa-print"></i></a>
+                                                            @if($order->order_status == 1)
+                                                             <a class="btn btn-warning" href="{{ route('admin.order_print',$order->serial_number) }}"><i class="fa fa-print"></i></a>
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                 @endforeach

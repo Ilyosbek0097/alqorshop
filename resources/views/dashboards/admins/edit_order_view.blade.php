@@ -48,12 +48,18 @@
                                     <input readonly class="form-control" name="order_id" type="hidden" value="{{ $one_order_data->order_id }}">
                                 </div>
                                 <div class="form-group">
-                                    <label>Tovar Miqdori</label>
-                                    <input readonly name="ammount" class="form-control" type="text" value="{{ $one_order_data->ammount }}">
+                                    <label>Bazadagi Tovarning Qolgan Miqdori</label>
+                                    <input readonly type="text" class="form-control text-danger" value="{{ $one_order_data->product_amount }}" >
                                 </div>
                                 <div class="form-group">
+                                    <label>Tovar Miqdori</label>
+                                    <input required name="ammount" id="order_amount" step="0.01" class="form-control" type="number" value="{{ $one_order_data->ammount }}">
+                                    <input type="hidden" id="base_amount" value="{{ $one_order_data->product_amount }}" >
+                                </div>
+
+                                <div class="form-group">
                                     <label>Tovar Narxi</label>
-                                    <input required name="selling_price" class="form-control" type="text" value="{{ $one_order_data->selling_price }}">
+                                    <input id="price_selling" required name="selling_price" class="form-control" type="text" value="{{ $one_order_data->selling_price }}">
                                 </div>
                                 <div class="form-group">
                                     <input type="submit" class="btn btn-success" value="Tasdiqlash">
@@ -66,4 +72,56 @@
             </div>
         </div>
     </section>
+@endsection
+@section('script')
+    <script>
+        $(document).ready(function(){
+            var base_amount = $('#base_amount').val();
+            if(parseFloat(base_amount) <= 0)
+            {
+                Swal.fire({
+                    icon: 'warning',
+                    iconColor: 'red',
+                    title: 'Diqqat!',
+                    text: 'Bazada Bu Tovardan Qolmagan! Iltimos Ortga Qaytib Buyurtmadan Ushbu Maxsulotni O`chiring',
+                    showConfirmButton: true,
+                });
+                $("#order_amount").prop('disabled', true);
+                $("#price_selling").prop('disabled', true);
+            }
+            $(document).on('blur', '#order_amount', function(){
+                var value = $(this).val();
+                if(parseFloat(value) > 0)
+                {
+                    if(parseFloat(value) > parseFloat(base_amount) )
+                    {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Diqqat!',
+                            text: 'Bazada Buncha Miqdor Qolmagan!',
+                            showConfirmButton: false,
+                            timer: 2500
+                        })
+
+                        $(this).val('');
+                    }
+                }
+                else{
+                    Swal.fire({
+                        icon: 'error',
+                        iconColor: 'red',
+                        title: 'Diqqat!',
+                        text: 'Miqdor Noto`g`ri Kiritildi!',
+                        showConfirmButton: false,
+                        timer: 2500
+                    })
+                    $(this).val('');
+                }
+
+
+
+
+            });
+        });
+    </script>
 @endsection

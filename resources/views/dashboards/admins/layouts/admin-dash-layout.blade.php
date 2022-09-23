@@ -239,10 +239,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <footer class="main-footer">
             <!-- To the right -->
             <div class="float-right d-none d-sm-inline">
-                Anything you want
+                Savdoingizni Barakasini Bersin!
             </div>
             <!-- Default to the left -->
-            <strong>by SIMN &copy; 2022-2025
+            <strong>by SIM &copy;2022
 
         </footer>
     </div>
